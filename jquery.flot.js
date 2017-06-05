@@ -1566,7 +1566,7 @@ Licensed under the MIT license.
             plotOffset.bottom = Math.ceil(Math.max(margins.bottom, plotOffset.bottom));
         }
 
-        function setupGrid() {
+        function setupGrid(preventLegendRedraw) {
             var i, axes = allAxes(), showGrid = options.grid.show;
 
             // Initialize the plot's offset from the edge of the canvas
@@ -1638,6 +1638,7 @@ Licensed under the MIT license.
                 drawAxisLabels();
             }
 
+            if (typeof preventLegendRedraw !== 'undefined' && preventLegendRedraw === true) { return; }
             insertLegend();
         }
 
