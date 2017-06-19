@@ -401,7 +401,7 @@ Licensed under the MIT license.
 	// @param {string=} valign Vertical alignment of the text; either "top",
 	//     "middle" or "bottom".
 
-	Canvas.prototype.addText = function(layer, x, y, text, font, angle, width, halign, valign) {
+	Canvas.prototype.addText = function(layer, x, y, text, font, angle, width, halign, valign, className = null) {
 
 		var info = this.getTextInfo(layer, text, font, angle, width),
 			positions = info.positions;
@@ -452,6 +452,9 @@ Licensed under the MIT license.
 			left: Math.round(x),
 			'text-align': halign	// In case the text wraps
 		});
+
+        position.element.removeClass();
+        if (className) { position.element.addClass(className); }
 	};
 
 	// Removes one or more text strings from the canvas text overlay.
@@ -2224,7 +2227,11 @@ Licensed under the MIT license.
                         }
                     }
 
-                    surface.addText(layer, x, y, tick.label, font, null, null, halign, valign);
+                    if (i === axis.ticks.length - 1) {
+                        surface.addText(layer, x, y, tick.label, font, null, null, halign, valign, 'top-tick');
+                    }else{
+                        surface.addText(layer, x, y, tick.label, font, null, null, halign, valign);
+                    }
                 }
             });
         }
