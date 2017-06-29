@@ -1646,10 +1646,29 @@ Licensed under the MIT license.
         }
 
         function setRange(axis) {
-            var opts = axis.options,
-                min = +(opts.min != null ? opts.min : axis.datamin),
-                max = +(opts.max != null ? opts.max : axis.datamax),
-                delta = max - min;
+            var opts = axis.options;
+            var min;
+            var max;
+
+            if(axis.direction === 'y') {
+                if(opts.min === undefined) {
+                    min =+ axis.datamin < 0 ? axis.datamin : 0;    
+                } else {
+                    min =+ axis.datamin;    
+                }
+
+                if(opts.max === undefined) {
+                    max =+ axis.datamax < 0 ? 0 : axis.datamax;
+                } else {
+                    max =+ axis.datamax
+                }
+            } 
+            else {
+                min = +(opts.min != null ? opts.min : axis.datamin);
+                max = +(opts.max != null ? opts.max : axis.datamax);
+            }
+
+            var delta = max - min;
 
             if (delta == 0.0) {
                 // degenerate case
