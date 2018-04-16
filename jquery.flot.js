@@ -637,6 +637,8 @@ Licensed under the MIT license.
 
         // public functions
         plot.setData = setData;
+        plot.appendData = appendData;
+        plot.removeSeries = removeSeries;
         plot.setupGrid = setupGrid;
         plot.draw = draw;
         plot.getPlaceholder = function() { return placeholder; };
@@ -880,6 +882,27 @@ Licensed under the MIT license.
 
         function setData(d) {
             series = parseData(d);
+            fillInSeriesOptions();
+            processData();
+        }
+
+        function appendData(d) {
+            for (let index = 0; index < d.length; index++) {
+                var s = series.find(series => { return series.label === d[index].label; })
+                if (s) { 
+                    s.data = s.data.concat(d[index].data); 
+                } else {
+                    series.push(parseData([d[index]])[0]); 
+                }
+            }
+            
+            fillInSeriesOptions();
+            processData();
+        }
+
+        function removeSeries(label){
+            var index = series.findIndex(series => { return series.label === label; })
+            if (index !== -1) { series.splice(index, 1); }
             fillInSeriesOptions();
             processData();
         }
