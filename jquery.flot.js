@@ -892,7 +892,10 @@ Licensed under the MIT license.
                 if (s) { 
                     s.data = s.data.concat(d[index].data); 
                 } else {
-                    series.push(parseData([d[index]])[0]); 
+                    series = series.concat(parseData([d[index]]));
+                    for (let index = 0; index < series.length; index++) {
+                        delete series[index].color;
+                    }
                 }
             }
             
