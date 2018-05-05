@@ -2817,7 +2817,7 @@ Licensed under the MIT license.
 
                 fragments.push(
                     `<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="${entry.label}">
-                        <div class="legendColorBox" style="margin: 0.2em 0em; width: 0.2em; background-color: ${entry.color};"></div>
+                        <div class="legendColorBox" style="margin: 3px 0px; width: 5px; background-color: ${entry.color};"></div>
                         <div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em">${entry.label}</div>
                     </div>`
                 );
