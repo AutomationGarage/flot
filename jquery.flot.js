@@ -2816,7 +2816,7 @@ Licensed under the MIT license.
                 var entry = entries[i];
 
                 fragments.push(
-                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;">
+                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="${entry.label}">
                         <div class="legendColorBox" style="margin: 0.2em 0em; width: 0.2em; background-color: ${entry.color};"></div>
                         <div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em">${entry.label}</div>
                     </div>`
@@ -2830,9 +2830,9 @@ Licensed under the MIT license.
             if (options.legend.container != null) {
                 $(options.legend.container).html(legendContainer);
                 $(".legend-item", options.legend.container).on("click", function(event) {
-                    var index = options.legend.hidden.indexOf(event.target.innerText);
+                    var index = options.legend.hidden.indexOf(event.currentTarget.dataset["series"]);
                     if (index === -1) {
-                        options.legend.hidden.push(event.target.innerText);
+                        options.legend.hidden.push(event.currentTarget.dataset["series"]);
                     } else {
                         options.legend.hidden.splice(index, 1)
                     }
