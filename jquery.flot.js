@@ -3036,7 +3036,7 @@ Licensed under the MIT license.
         }
 
         function triggerRedrawOverlay() {
-            if (options.interaction.disableOverlay) { return; } 
+            if (options.interaction.redrawOverlayInterval === null) { return; }
             var t = options.interaction.redrawOverlayInterval;
             if (t == -1) {      // skip event queue
                 drawOverlay();
