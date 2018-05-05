@@ -525,7 +525,8 @@ Licensed under the MIT license.
                     margin: 5, // distance from grid edge to default legend container within plot
                     backgroundColor: null, // null means auto-detect
                     backgroundOpacity: 0.85, // set to 0 to avoid background
-                    sorted: null    // default to no legend sorting
+                    sorted: null,    // default to no legend sorting
+                    hidden: [] //determines what series should be hidden upon initialization
                 },
                 xaxis: {
                     show: null, // null = auto-detect, true = always, false = never
@@ -1247,7 +1248,12 @@ Licensed under the MIT license.
             // give the hooks a chance to run
             for (i = 0; i < series.length; ++i) {
                 s = series[i];
-
+                var index = options.legend.hidden.indexOf(s.label);
+                if (index !== -1) {
+                    s.lines.show = false;
+                } else {
+                    s.lines.show = true;
+                }
                 executeHooks(hooks.processDatapoints, [ s, s.datapoints]);
             }
 
@@ -1628,14 +1634,15 @@ Licensed under the MIT license.
                     return axis.show || axis.reserveSpace;
                 });
 
-                $.each(allocatedAxes, function (_, axis) {
+                for (let index = 0; index < allocatedAxes.length; index++) {
+                    const axis = allocatedAxes[index];
                     // make the ticks
                     setupTickGeneration(axis);
                     setTicks(axis);
                     snapRangeToTicks(axis, axis.ticks);
                     // find labelWidth/Height for axis
                     measureTickLabels(axis);
-                });
+                }
 
                 // with all dimensions calculated, we can compute the
                 // axis bounding boxes, start from the outside
@@ -2779,7 +2786,7 @@ Licensed under the MIT license.
                     if (label) {
                         entries.push({
                             label: label,
-                            color: s.color
+                            color: options.legend.hidden.indexOf(label) === -1 ? s.color : '#fff',
                         });
                     }
                 }
@@ -2808,29 +2815,31 @@ Licensed under the MIT license.
 
                 var entry = entries[i];
 
-                if (i % options.legend.noColumns == 0) {
-                    if (rowStarted)
-                        fragments.push('</tr>');
-                    fragments.push('<tr>');
-                    rowStarted = true;
-                }
-
                 fragments.push(
-                    '<td class="legendColorBox"><div style="border:1px solid ' + options.legend.labelBoxBorderColor + ';padding:1px"><div style="width:4px;height:0;border:5px solid ' + entry.color + ';overflow:hidden"></div></div></td>' +
-                    '<td class="legendLabel">' + entry.label + '</td>'
+                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;">
+                        <div class="legendColorBox" style="margin: 0.2em 0em; width: 0.2em; background-color: ${entry.color};"></div>
+                        <div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em">${entry.label}</div>
+                    </div>`
                 );
             }
-
-            if (rowStarted)
-                fragments.push('</tr>');
 
             if (fragments.length == 0)
                 return;
 
-            var table = '<table style="font-size:smaller;color:' + options.grid.color + '">' + fragments.join("") + '</table>';
-            if (options.legend.container != null)
-                $(options.legend.container).html(table);
-            else {
+            var legendContainer = '<div style="display: flex; flex-flow: row wrap;">' + fragments.join("") + '</div>';
+            if (options.legend.container != null) {
+                $(options.legend.container).html(legendContainer);
+                $(".legend-item", options.legend.container).on("click", function(event) {
+                    var index = options.legend.hidden.indexOf(event.target.innerText);
+                    if (index === -1) {
+                        options.legend.hidden.push(event.target.innerText);
+                    } else {
+                        options.legend.hidden.splice(index, 1)
+                    }
+                    plot.setData(plot.getData());
+                    plot.setupGrid();
+                });
+            } else {
                 var pos = "",
                     p = options.legend.position,
                     m = options.legend.margin;
@@ -2844,7 +2853,7 @@ Licensed under the MIT license.
                     pos += 'right:' + (m[0] + plotOffset.right) + 'px;';
                 else if (p.charAt(1) == "w")
                     pos += 'left:' + (m[0] + plotOffset.left) + 'px;';
-                var legend = $('<div class="legend">' + table.replace('style="', 'style="position:absolute;' + pos +';') + '</div>').appendTo(placeholder);
+                var legend = $('<div class="legend">' + legendContainer.replace('style="', 'style="position:absolute;' + pos +';') + '</div>').appendTo(placeholder);
                 if (options.legend.backgroundOpacity != 0.0) {
                     // put in the transparent background
                     // separately to avoid blended labels and
@@ -3027,6 +3036,7 @@ Licensed under the MIT license.
         }
 
         function triggerRedrawOverlay() {
+            if (options.interaction.disableOverlay) { return; } 
             var t = options.interaction.redrawOverlayInterval;
             if (t == -1) {      // skip event queue
                 drawOverlay();
