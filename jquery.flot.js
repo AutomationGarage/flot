@@ -2837,6 +2837,7 @@ Licensed under the MIT license.
                         options.legend.hidden.splice(index, 1)
                     }
                     plot.setData(plot.getData());
+                    plot.draw();
                     plot.setupGrid();
                 });
             } else {
