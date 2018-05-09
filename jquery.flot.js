@@ -1635,7 +1635,7 @@ Licensed under the MIT license.
                 });
 
                 for (let index = 0; index < allocatedAxes.length; index++) {
-                    const axis = allocatedAxes[index];
+                    var axis = allocatedAxes[index];
                     // make the ticks
                     setupTickGeneration(axis);
                     setTicks(axis);
