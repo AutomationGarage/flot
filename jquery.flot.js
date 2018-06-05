@@ -889,7 +889,7 @@ Licensed under the MIT license.
 
         function appendData(d) {
             for (let index = 0; index < d.length; index++) {
-                var s = series.find(series => { return series.label === d[index].label; })
+                var s = series.find(series => { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
                 if (s) { 
                     s.data = s.data.concat(d[index].data); 
                 } else {
@@ -904,11 +904,13 @@ Licensed under the MIT license.
             processData();
         }
 
-        function removeSeries(label){
-            var index = series.findIndex(series => { return series.label === label; })
-            if (index !== -1) { series.splice(index, 1); }
-            fillInSeriesOptions();
-            processData();
+        function removeSeries(label, axisNumber){
+            var index = series.findIndex(s => { return s.label === label && s.yaxis.n === axisNumber; })
+            if (index !== -1 && series[index]) { 
+                series.splice(index, 1); 
+                fillInSeriesOptions();
+                processData();
+            }
         }
 
         function parseData(d) {
