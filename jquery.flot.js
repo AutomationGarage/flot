@@ -1250,7 +1250,7 @@ Licensed under the MIT license.
             // give the hooks a chance to run
             for (i = 0; i < series.length; ++i) {
                 s = series[i];
-                var index = options.legend.hidden.indexOf(s.label);
+                var index = options.legend.hidden.findIndex(el => { return el.series === s.label && el.yaxis === s.yaxis.n; });
                 if (index !== -1) {
                     s.lines.show = false;
                 } else {
@@ -2788,7 +2788,8 @@ Licensed under the MIT license.
                     if (label) {
                         entries.push({
                             label: label,
-                            color: options.legend.hidden.indexOf(label) === -1 ? s.color : '#fff',
+                            color: options.legend.hidden.findIndex(el => { return el.series === s.label && el.yaxis === s.yaxis.n; }) === -1 ? s.color : '#fff',
+                            yaxis: s.yaxis.n
                         });
                     }
                 }
@@ -2816,9 +2817,8 @@ Licensed under the MIT license.
             for (var i = 0; i < entries.length; ++i) {
 
                 var entry = entries[i];
-
                 fragments.push(
-                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="${entry.label}">
+                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="${entry.label}" data-yaxis="${entry.yaxis}">
                         <div class="legendColorBox" style="margin: 3px 0px; width: 5px; background-color: ${entry.color};"></div>
                         <div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em">${entry.label}</div>
                     </div>`
@@ -2832,12 +2832,16 @@ Licensed under the MIT license.
             if (options.legend.container != null) {
                 $(options.legend.container).html(legendContainer);
                 $(".legend-item", options.legend.container).on("click", function(event) {
-                    var index = options.legend.hidden.indexOf(event.currentTarget.dataset["series"]);
+                    var seriesName = event.currentTarget.dataset["series"];
+                    var yaxis = parseInt(event.currentTarget.dataset["yaxis"], 10); 
+
+                    var index = options.legend.hidden.findIndex(el => { return el.series === seriesName && el.yaxis === yaxis; });
                     if (index === -1) {
-                        options.legend.hidden.push(event.currentTarget.dataset["series"]);
+                        options.legend.hidden.push({ series: seriesName, yaxis: yaxis });
                     } else {
                         options.legend.hidden.splice(index, 1)
                     }
+
                     plot.setData(plot.getData());
                     plot.draw();
                     plot.setupGrid();
