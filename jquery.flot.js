@@ -883,18 +883,30 @@ Licensed under the MIT license.
 
         function setData(d) {
             series = parseData(d);
+            for (var index = 0; index < series.length; index++) {
+                var s = series[index];
+                s.data.sort(function(a, b) { return a[0] - b[0]; });
+            }
             fillInSeriesOptions();
             processData();
         }
 
         function appendData(d) {
-            for (let index = 0; index < d.length; index++) {
+            for (var index = 0; index < d.length; index++) {
                 var s = series.find(series => { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
-                if (s) { 
-                    s.data = s.data.concat(d[index].data); 
+                if (s) {
+                    if (s.data.length !== 0) {
+                        var outOfOrderIndex = d[index].data.findIndex(function(dp) { return s.data[s.data.length - 1][0] > dp[0]; });
+                        s.data = s.data.concat(d[index].data);
+                        if (outOfOrderIndex !== -1) { s.data.sort(function(a, b) { return a[0] - b[0]; }); }
+                    } else {
+                        s.data = s.data.concat(d[index].data);
+                        s.data.sort(function(a, b) { return a[0] - b[0]; });
+                    }                  
                 } else {
                     series = series.concat(parseData([d[index]]));
-                    for (let index = 0; index < series.length; index++) {
+                    series.sort(function(a, b) { return a[0] - b[0]; });
+                    for (var index = 0; index < series.length; index++) {
                         delete series[index].color;
                     }
                 }
