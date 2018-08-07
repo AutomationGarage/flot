@@ -553,7 +553,8 @@ Licensed under the MIT license.
                 },
                 yaxis: {
                     autoscaleMargin: 0.02,
-                    position: "left" // or "right"
+                    position: "left", // or "right"
+                    zeroMin: true
                 },
                 xaxes: [],
                 yaxes: [],
@@ -1694,7 +1695,7 @@ Licensed under the MIT license.
             var min;
             var max;
 
-            if(axis.direction === 'y') {
+            if(axis.direction === 'y' && options.yaxis.zeroMin) {
                 if(opts.min === undefined) {
                     min =+ axis.datamin < 0 ? axis.datamin : 0;    
                 } else {
