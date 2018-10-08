@@ -894,7 +894,7 @@ Licensed under the MIT license.
 
         function appendData(d) {
             for (var index = 0; index < d.length; index++) {
-                var s = series.find(series => { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
+                var s = series.find(function(series) { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
                 if (s) {
                     if (s.data.length !== 0) {
                         var outOfOrderIndex = d[index].data.findIndex(function(dp) { return s.data[s.data.length - 1][0] > dp[0]; });
@@ -918,7 +918,7 @@ Licensed under the MIT license.
         }
 
         function removeSeries(label, axisNumber){
-            var index = series.findIndex(s => { return s.label === label && s.yaxis.n === axisNumber; })
+            var index = series.findIndex(function(s) { return s.label === label && s.yaxis.n === axisNumber; })
             if (index !== -1 && series[index]) { 
                 series.splice(index, 1); 
                 fillInSeriesOptions();
@@ -1263,7 +1263,7 @@ Licensed under the MIT license.
             // give the hooks a chance to run
             for (i = 0; i < series.length; ++i) {
                 s = series[i];
-                var index = options.legend.hidden.findIndex(el => { return el.series === s.label && el.yaxis === s.yaxis.n; });
+                var index = options.legend.hidden.findIndex(function(el) { return el.series === s.label && el.yaxis === s.yaxis.n; });
                 if (index !== -1) {
                     s.lines.show = false;
                 } else {
@@ -1649,7 +1649,7 @@ Licensed under the MIT license.
                     return axis.show || axis.reserveSpace;
                 });
 
-                for (let index = 0; index < allocatedAxes.length; index++) {
+                for (var index = 0; index < allocatedAxes.length; index++) {
                     var axis = allocatedAxes[index];
                     // make the ticks
                     setupTickGeneration(axis);
@@ -2801,7 +2801,7 @@ Licensed under the MIT license.
                     if (label) {
                         entries.push({
                             label: label,
-                            color: options.legend.hidden.findIndex(el => { return el.series === s.label && el.yaxis === s.yaxis.n; }) === -1 ? s.color : '#fff',
+                            color: options.legend.hidden.findIndex(function(el) { return el.series === s.label && el.yaxis === s.yaxis.n; }) === -1 ? s.color : '#fff',
                             yaxis: s.yaxis.n
                         });
                     }
@@ -2848,7 +2848,7 @@ Licensed under the MIT license.
                     var seriesName = event.currentTarget.dataset["series"];
                     var yaxis = parseInt(event.currentTarget.dataset["yaxis"], 10); 
 
-                    var index = options.legend.hidden.findIndex(el => { return el.series === seriesName && el.yaxis === yaxis; });
+                    var index = options.legend.hidden.findIndex(function(el) { return el.series === seriesName && el.yaxis === yaxis; });
                     if (index === -1) {
                         options.legend.hidden.push({ series: seriesName, yaxis: yaxis });
                     } else {
