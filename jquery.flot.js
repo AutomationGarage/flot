@@ -2831,10 +2831,10 @@ Licensed under the MIT license.
 
                 var entry = entries[i];
                 fragments.push(
-                    `<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="${entry.label}" data-yaxis="${entry.yaxis}">
-                        <div class="legendColorBox" style="margin: 3px 0px; width: 5px; background-color: ${entry.color};"></div>
-                        <div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em">${entry.label}</div>
-                    </div>`
+                    '<div class="legend-item" style="display: inline-flex; cursor: pointer;" data-series="' + entry.label + '" data-yaxis="' + entry.yaxis +'">' +
+                        '<div class="legendColorBox" style="margin: 3px 0px; width: 5px; background-color: ' + entry.color + ';"></div>' +
+                        '<div class="legendLabel" style="font-size: smaller; padding: 0em 0.5em;">' + entry.label + '</div>' +
+                    '</div>'
                 );
             }
 
