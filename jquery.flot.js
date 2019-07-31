@@ -526,7 +526,8 @@ Licensed under the MIT license.
                     backgroundColor: null, // null means auto-detect
                     backgroundOpacity: 0.85, // set to 0 to avoid background
                     sorted: null,    // default to no legend sorting
-                    hidden: [] //determines what series should be hidden upon initialization
+                    hidden: [], //determines what series should be hidden upon initialization,
+                    onHidden: null
                 },
                 xaxis: {
                     show: null, // null = auto-detect, true = always, false = never
@@ -2856,9 +2857,10 @@ Licensed under the MIT license.
                     } else {
                         options.legend.hidden.splice(index, 1)
                     }
+                    if (options.legend.onHidden) { options.legend.onHidden(options.legend.hidden); }
 
                     plot.setData(plot.getData());
-                    plot.setupGrid(true);
+                    plot.setupGrid();
                     plot.draw();
                 });
             } else {
