@@ -1332,8 +1332,10 @@ Licensed under the MIT license.
                     }
                 }
 
-                updateAxis(s.xaxis, xmin, xmax);
-                updateAxis(s.yaxis, ymin, ymax);
+                if (options.legend.hidden.findIndex(function(el) { return el.series === s.label && el.yaxis === s.yaxis.n; }) === -1) {
+                    updateAxis(s.xaxis, xmin, xmax);
+                    updateAxis(s.yaxis, ymin, ymax);
+                }
             }
 
             $.each(allAxes(), function (_, axis) {
@@ -2856,8 +2858,8 @@ Licensed under the MIT license.
                     }
 
                     plot.setData(plot.getData());
+                    plot.setupGrid(true);
                     plot.draw();
-                    plot.setupGrid();
                 });
             } else {
                 var pos = "",
