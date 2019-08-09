@@ -883,11 +883,20 @@ Licensed under the MIT license.
             executeHooks(hooks.processOptions, [options]);
         }
 
+        function sortDataPoints(dataPoints) {
+            dataPoints.sort(function (a, b) {
+                if (a && b) {
+                    return a[0] - b[0];
+                } else {
+                    return 0;
+                }
+            });
+        }
+
         function setData(d) {
             series = parseData(d);
             for (var index = 0; index < series.length; index++) {
-                var s = series[index];
-                s.data.sort(function(a, b) { return a[0] - b[0]; });
+                sortDataPoints(series[index].data);
             }
             fillInSeriesOptions();
             processData();
@@ -895,19 +904,19 @@ Licensed under the MIT license.
 
         function appendData(d) {
             for (var index = 0; index < d.length; index++) {
-                var s = series.find(function(series) { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
+                var s = series.find(function (series) { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
                 if (s) {
                     if (s.data.length !== 0) {
-                        var outOfOrderIndex = d[index].data.findIndex(function(dp) { return s.data[s.data.length - 1][0] > dp[0]; });
+                        var outOfOrderIndex = d[index].data.findIndex(function (dp) { return s.data[s.data.length - 1][0] > dp[0]; });
                         s.data = s.data.concat(d[index].data);
-                        if (outOfOrderIndex !== -1) { s.data.sort(function(a, b) { return a[0] - b[0]; }); }
+                        if (outOfOrderIndex !== -1) { sortDataPoints(s.data); }
                     } else {
                         s.data = s.data.concat(d[index].data);
-                        s.data.sort(function(a, b) { return a[0] - b[0]; });
-                    }                  
+                        sortDataPoints(s.data);
+                    }
                 } else {
                     series = series.concat(parseData([d[index]]));
-                    series.sort(function(a, b) { return a[0] - b[0]; });
+                    sortDataPoints(series);
                     for (var index = 0; index < series.length; index++) {
                         delete series[index].color;
                     }
@@ -2859,7 +2868,8 @@ Licensed under the MIT license.
                     }
                     if (options.legend.onHidden) { options.legend.onHidden(options.legend.hidden); }
 
-                    plot.setData(plot.getData());
+                    fillInSeriesOptions();
+                    processData();
                     plot.setupGrid();
                     plot.draw();
                 });
