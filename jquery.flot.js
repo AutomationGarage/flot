@@ -895,28 +895,37 @@ Licensed under the MIT license.
 
         function setData(d) {
             series = parseData(d);
-            for (var index = 0; index < series.length; index++) {
-                sortDataPoints(series[index].data);
-            }
             fillInSeriesOptions();
             processData();
         }
 
-        function appendData(d) {
-            for (var index = 0; index < d.length; index++) {
-                var s = series.find(function (series) { return series.label === d[index].label && d[index].yaxis === series.yaxis.n; })
-                if (s) {
-                    if (s.data.length !== 0) {
-                        var outOfOrderIndex = d[index].data.findIndex(function (dp) { return s.data[s.data.length - 1][0] > dp[0]; });
-                        s.data = s.data.concat(d[index].data);
-                        if (outOfOrderIndex !== -1) { sortDataPoints(s.data); }
+        function appendData(dataSet) {
+            for (var index = 0; index < dataSet.length; index++) {
+                if (dataSet[index].data.length > 1) {
+                    for (var i = 0; i < dataSet[index].data.length - 1; i++) {
+                        if (dataSet[index].data[i][0] > dataSet[index].data[i+1][0]) {
+                            sortDataPoints(dataSet[index].data); 
+                            break;
+                        }
+                    }
+                }
+                var existingSeries = series.find(function (series) { return series.label === dataSet[index].label && dataSet[index].yaxis === series.yaxis.n; })
+                if (existingSeries) {
+                    if (existingSeries.data.length === 0) {
+                        Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
                     } else {
-                        s.data = s.data.concat(d[index].data);
-                        sortDataPoints(s.data);
+                        if (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0]) {
+                            Array.prototype.unshift.apply(existingSeries.data, dataSet[index].data);
+                        } else if (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0]) {
+                            Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                        } else {
+                            Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                            sortDataPoints(existingSeries.data);
+                        }
                     }
                 } else {
-                    series = series.concat(parseData([d[index]]));
-                    sortDataPoints(series);
+                    var newSeries = parseData([dataSet[index]]);
+                    Array.prototype.push.apply(series, newSeries);
                     for (var index = 0; index < series.length; index++) {
                         delete series[index].color;
                     }
@@ -929,7 +938,7 @@ Licensed under the MIT license.
 
         function removeSeries(label, axisNumber){
             var index = series.findIndex(function(s) { return s.label === label && s.yaxis.n === axisNumber; })
-            if (index !== -1 && series[index]) { 
+            if (index !== -1 && series[index]) {
                 series.splice(index, 1); 
                 fillInSeriesOptions();
                 processData();
