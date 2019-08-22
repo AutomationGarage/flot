@@ -911,16 +911,18 @@ Licensed under the MIT license.
                 }
                 var existingSeries = series.find(function (series) { return series.label === dataSet[index].label && dataSet[index].yaxis === series.yaxis.n; })
                 if (existingSeries) {
-                    if (existingSeries.data.length === 0) {
-                        Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
-                    } else {
-                        if (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0]) {
-                            Array.prototype.unshift.apply(existingSeries.data, dataSet[index].data);
-                        } else if (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0]) {
+                    if (dataSet[index].data.length !== 0) {
+                        if (existingSeries.data.length === 0) {
                             Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
                         } else {
-                            Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
-                            sortDataPoints(existingSeries.data);
+                            if (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0]) {
+                                Array.prototype.unshift.apply(existingSeries.data, dataSet[index].data);
+                            } else if (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0]) {
+                                Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                            } else {
+                                Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                                sortDataPoints(existingSeries.data);
+                            }
                         }
                     }
                 } else {
