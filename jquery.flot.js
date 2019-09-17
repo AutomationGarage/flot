@@ -1961,6 +1961,8 @@ Licensed under the MIT license.
 
             var grid = options.grid;
 
+            ctx.save();
+            ctx.translate(plotOffset.left, plotOffset.top);
             // draw background, if any
             if (grid.show && grid.backgroundColor)
                 drawBackground();
@@ -1980,6 +1982,7 @@ Licensed under the MIT license.
                 drawGrid();
             }
 
+            ctx.restore();
             surface.render();
 
             // A draw implies that either the axes or data have changed, so we
@@ -2023,19 +2026,12 @@ Licensed under the MIT license.
         }
 
         function drawBackground() {
-            ctx.save();
-            ctx.translate(plotOffset.left, plotOffset.top);
-
             ctx.fillStyle = getColorOrGradient(options.grid.backgroundColor, plotHeight, 0, "rgba(255, 255, 255, 0)");
             ctx.fillRect(0, 0, plotWidth, plotHeight);
-            ctx.restore();
         }
 
         function drawGrid() {
             var i, axes, bw, bc;
-
-            ctx.save();
-            ctx.translate(plotOffset.left, plotOffset.top);
 
             // draw markings
             var markings = options.grid.markings;
@@ -2266,8 +2262,6 @@ Licensed under the MIT license.
                     ctx.strokeRect(-bw/2, -bw/2, plotWidth + bw, plotHeight + bw);
                 }
             }
-
-            ctx.restore();
         }
 
         function drawAxisLabels() {
@@ -2551,8 +2545,6 @@ Licensed under the MIT license.
                 }
             }
 
-            ctx.save();
-            ctx.translate(plotOffset.left, plotOffset.top);
             ctx.lineJoin = "round";
 
             var lw = series.lines.lineWidth,
@@ -2579,7 +2571,6 @@ Licensed under the MIT license.
 
             if (lw > 0)
                 plotLine(series.datapoints, 0, 0, series.xaxis, series.yaxis);
-            ctx.restore();
         }
 
         function drawSeriesPoints(series) {
@@ -2607,9 +2598,6 @@ Licensed under the MIT license.
                     ctx.stroke();
                 }
             }
-
-            ctx.save();
-            ctx.translate(plotOffset.left, plotOffset.top);
 
             var lw = series.points.lineWidth,
                 sw = series.shadowSize,
@@ -2642,7 +2630,6 @@ Licensed under the MIT license.
             plotPoints(series.datapoints, radius,
                        getFillStyle(series.points, series.color), 0, false,
                        series.xaxis, series.yaxis, symbol);
-            ctx.restore();
         }
 
         function drawBar(x, y, b, barLeft, barRight, fillStyleCallback, axisx, axisy, c, horizontal, lineWidth) {
@@ -2761,9 +2748,6 @@ Licensed under the MIT license.
                 }
             }
 
-            ctx.save();
-            ctx.translate(plotOffset.left, plotOffset.top);
-
             // FIXME: figure out a way to add shadows (for instance along the right edge)
             ctx.lineWidth = series.bars.lineWidth;
             ctx.strokeStyle = series.color;
@@ -2783,7 +2767,6 @@ Licensed under the MIT license.
 
             var fillStyleCallback = series.bars.fill ? function (bottom, top) { return getFillStyle(series.bars, series.color, bottom, top); } : null;
             plotBars(series.datapoints, barLeft, barLeft + series.bars.barWidth, fillStyleCallback, series.xaxis, series.yaxis);
-            ctx.restore();
         }
 
         function getFillStyle(filloptions, seriesColor, bottom, top) {
