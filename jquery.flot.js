@@ -913,21 +913,21 @@ Licensed under the MIT license.
                 if (existingSeries) {
                     if (dataSet[index].data.length !== 0) {
                         if (existingSeries.data.length === 0) {
-                            Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                            existingSeries.data = existingSeries.data.concat(dataSet[index].data);
                         } else {
                             if (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0]) {
                                 Array.prototype.unshift.apply(existingSeries.data, dataSet[index].data);
                             } else if (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0]) {
-                                Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                                existingSeries.data = existingSeries.data.concat(dataSet[index].data);
                             } else {
-                                Array.prototype.push.apply(existingSeries.data, dataSet[index].data);
+                                existingSeries.data = existingSeries.data.concat(dataSet[index].data);
                                 sortDataPoints(existingSeries.data);
                             }
                         }
                     }
                 } else {
                     var newSeries = parseData([dataSet[index]]);
-                    Array.prototype.push.apply(series, newSeries);
+                    series = series.concat(newSeries);
                     for (var index = 0; index < series.length; index++) {
                         delete series[index].color;
                     }
