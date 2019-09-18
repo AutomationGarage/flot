@@ -1666,6 +1666,15 @@ Licensed under the MIT license.
                 setRange(axis);
             });
 
+            for (var index = 0; index < series.length; index++) {
+                var s = series[index]
+                if (s.data && s.data.length !== 0 && s.xaxis.min) {
+                    var i = 0;
+                    while (s.data[i] && (s.xaxis.min > s.data[i][0]) && i < s.data.length) { i++; }
+                    s.data.splice(0, i);
+                }
+            }
+
             if (showGrid) {
 
                 var allocatedAxes = $.grep(axes, function (axis) {
