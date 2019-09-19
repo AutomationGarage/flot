@@ -903,7 +903,7 @@ Licensed under the MIT license.
             for (var index = 0; index < dataSet.length; index++) {
                 if (dataSet[index].data.length > 1) {
                     for (var i = 0; i < dataSet[index].data.length - 1; i++) {
-                        if (dataSet[index].data[i][0] > dataSet[index].data[i+1][0]) {
+                        if ((dataSet[index].data[i] && dataSet[index].data[i+1]) && (dataSet[index].data[i][0] > dataSet[index].data[i+1][0])) {
                             sortDataPoints(dataSet[index].data); 
                             break;
                         }
@@ -915,9 +915,9 @@ Licensed under the MIT license.
                         if (existingSeries.data.length === 0) {
                             existingSeries.data = existingSeries.data.concat(dataSet[index].data);
                         } else {
-                            if (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0]) {
+                            if ((existingSeries.data[0] && dataSet[index].data[dataSet[index].data.length - 1]) && (existingSeries.data[0][0] >= dataSet[index].data[dataSet[index].data.length - 1][0])) {
                                 Array.prototype.unshift.apply(existingSeries.data, dataSet[index].data);
-                            } else if (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0]) {
+                            } else if ((existingSeries.data[existingSeries.data.length - 1] && dataSet[index].data[0]) && (existingSeries.data[existingSeries.data.length - 1][0] <= dataSet[index].data[0][0])) {
                                 existingSeries.data = existingSeries.data.concat(dataSet[index].data);
                             } else {
                                 existingSeries.data = existingSeries.data.concat(dataSet[index].data);
