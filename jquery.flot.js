@@ -2103,12 +2103,24 @@ Licensed under the MIT license.
                         ctx.lineWidth = lineWidth;
                         if (xequal) {
                             ctx.moveTo(xrange.to + subPixel, yrange.from);
-                            ctx.lineTo(xrange.to + subPixel, yrange.to);
+                            ctx.lineTo(xrange.to + subPixel, yrange.to + 5);
+                            ctx.stroke();
+
+                            ctx.beginPath();
+                            ctx.moveTo(xrange.from + subPixel - 5, yrange.to + subPixel);
+                            ctx.lineTo(xrange.from + subPixel + 5, yrange.to + subPixel);
+                            ctx.lineTo(xrange.from + subPixel, yrange.to + subPixel + 5);
+                            ctx.closePath();
+                            ctx.lineWidth = lineWidth;
+                            ctx.strokeStyle = m.color || options.grid.markingsColor;
+                            ctx.fillStyle = m.color || options.grid.markingsColor;
+                            ctx.fill();
+                            ctx.stroke();
                         } else {
                             ctx.moveTo(xrange.from, yrange.to + subPixel);
-                            ctx.lineTo(xrange.to, yrange.to + subPixel);                            
+                            ctx.lineTo(xrange.to, yrange.to + subPixel);
+                            ctx.stroke();                            
                         }
-                        ctx.stroke();
                     } else {
                         ctx.fillStyle = m.color || options.grid.markingsColor;
                         ctx.fillRect(xrange.from, yrange.to,
@@ -2922,6 +2934,16 @@ Licensed under the MIT license.
             var maxDistance = options.grid.mouseActiveRadius,
                 smallestDistance = maxDistance * maxDistance + 1,
                 item = null, foundPoint = false, i, j, ps;
+            
+            var marking = null;
+            for (var index = 0; index < options.grid.markings.length; index++) {
+                var markingPosition = plot.getXAxes()[0].p2c(options.grid.markings[index].xaxis.from);
+                if (Math.abs(markingPosition - mouseX) < maxDistance)
+                {
+                    marking = options.grid.markings[index];
+                    break;
+                }
+            }
 
             for (i = series.length - 1; i >= 0; --i) {
                 if (!seriesFilter(series[i]))
@@ -3003,19 +3025,21 @@ Licensed under the MIT license.
                     }
                 }
             }
-
+            
+            var point = { };
             if (item) {
                 i = item[0];
                 j = item[1];
                 ps = series[i].datapoints.pointsize;
 
-                return { datapoint: series[i].datapoints.points.slice(j * ps, (j + 1) * ps),
-                         dataIndex: j,
-                         series: series[i],
-                         seriesIndex: i };
+                point.point = { datapoint: series[i].datapoints.points.slice(j * ps, (j + 1) * ps),
+                               dataIndex: j,
+                               series: series[i],
+                               seriesIndex: i };
             }
 
-            return null;
+            if (marking) { point.marking = marking; }
+            return point;
         }
 
         function onMouseMove(e) {
@@ -3048,10 +3072,11 @@ Licensed under the MIT license.
 
             var item = findNearbyItem(canvasX, canvasY, seriesFilter);
 
-            if (item) {
+            var point = item.point;
+            if (point) {
                 // fill in mouse pos for any listeners out there
-                item.pageX = parseInt(item.series.xaxis.p2c(item.datapoint[0]) + offset.left + plotOffset.left, 10);
-                item.pageY = parseInt(item.series.yaxis.p2c(item.datapoint[1]) + offset.top + plotOffset.top, 10);
+                point.pageX = parseInt(point.series.xaxis.p2c(point.datapoint[0]) + offset.left + plotOffset.left, 10);
+                point.pageY = parseInt(point.series.yaxis.p2c(point.datapoint[1]) + offset.top + plotOffset.top, 10);
             }
 
             if (options.grid.autoHighlight) {
@@ -3059,14 +3084,14 @@ Licensed under the MIT license.
                 for (var i = 0; i < highlights.length; ++i) {
                     var h = highlights[i];
                     if (h.auto == eventname &&
-                        !(item && h.series == item.series &&
-                          h.point[0] == item.datapoint[0] &&
-                          h.point[1] == item.datapoint[1]))
+                        !(point && h.series == point.series &&
+                          h.point[0] == point.datapoint[0] &&
+                          h.point[1] == point.datapoint[1]))
                         unhighlight(h.series, h.point);
                 }
 
-                if (item)
-                    highlight(item.series, item.datapoint, eventname);
+                if (point)
+                    highlight(point.series, point.datapoint, eventname);
             }
 
             placeholder.trigger(eventname, [ pos, item ]);
